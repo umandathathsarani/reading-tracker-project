@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reading Tracker</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>My Reading Tracker</h1>
+            <p>Track your books, webnovels, and fanfics</p>
+        </header>
+
+        <section class="form-section">
+            <h2>Add a New Story</h2>
+            <form id="add-story-form">
+                <input type="text" id="title" placeholder="Story Title" required>
+                <input type="text" id="author" placeholder="Author" required>
+                
+                <div class="form-row">
+                    <input type="text" id="platform" placeholder="Platform (e.g., Inkitt, AO3)" required>
+                    <input type="text" id="genre" placeholder="Genre" required>
+                </div>
+
+                <label for="status">Status</label>
+                <select id="status" required>
+                    <option value="" disabled selected>Select Status...</option>
+                    <option value="Currently Reading">Currently Reading</option>
+                    <option value="Waiting for Update">Waiting for Update</option>
+                    <option value="Completed">Completed</option>
+                </select>
+
+                <button type="submit">Add Story</button>
+            </form>
+        </section>
+
+        <section class="list-section">
+            <h2>My Library</h2>
+            <div id="story-list" class="story-grid"></div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
