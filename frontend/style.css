@@ -86,3 +86,23 @@ button:hover {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
 }
+
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    background: white;
+    margin-bottom: 20px;
+    border-radius: var(--border-radius);
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+nav a:hover {
+    color: var(--primary-color);
+}
