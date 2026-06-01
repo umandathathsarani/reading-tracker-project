@@ -9,7 +9,6 @@ function showPage(pageId) {
     document.getElementById(pageId).style.display = 'block';
     
     if (pageId === 'library') fetchStories();
-
     if (pageId === 'reading-list') renderReadingList(); 
 }
 
@@ -73,55 +72,78 @@ async function fetchStories() {
     try {
         const response = await fetch(API_URL);
         allStories = await response.json(); 
-        const list = document.getElementById('story-list');
-        list.innerHTML = ''; 
-
-        allStories.forEach(story => {
-            const card = document.createElement('div');
-
-            let quotesHtml = '<div class="quotes-section"><h4>Favorite Lines:</h4><ul>';
-            if (story.quotes && story.quotes.length > 0) {
-                story.quotes.forEach(q => {
-                    quotesHtml += `
-                        <li class="quote-item">
-                            <span>"${q.text}" <em style="color: #64748b;">(Page ${q.pageNumber})</em></span>
-                            <div class="quote-actions">
-                                <button class="btn-icon btn-icon-edit" onclick="openEditQuoteModal('${story.id}', '${q.id}')">Edit</button>
-                                <button class="btn-icon btn-icon-delete" onclick="deleteQuote('${story.id}', '${q.id}')">X</button>
-                            </div>
-                        </li>`;
-                });
-            } else {
-                quotesHtml += '<li style="color: #94a3b8; list-style: none; font-style: italic;">No lines saved yet.</li>';
-            }
-            quotesHtml += '</ul></div>';
-
-            card.innerHTML = `
-                <h3>${story.title}</h3>
-                <p><strong>Author:</strong> ${story.author}</p>
-                <p><strong>Platform:</strong> ${story.platform}</p>
-                <p><strong>Status:</strong> ${story.status}</p>
-                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 15px 0;">
-                ${quotesHtml}
-                <button onclick="openQuoteModal('${story.id}')" style="margin-top: 12px; padding: 8px; width: 100%;">Add Quote</button>
-                <div class="card-actions">
-                    <button class="btn-edit" onclick="openEditModal('${story.id}')">Edit Story</button>
-                    <button class="btn-delete" onclick="requestDeleteStory('${story.id}')">Delete Story</button>
-                </div>
-            `;
-            list.appendChild(card);
-        });
-
+        
+        renderLibrary(); 
         updateDashboardStats();
-
     } catch (error) { console.error("Error fetching stories:", error); }
+}
+
+function renderLibrary() {
+    const list = document.getElementById('story-list');
+    list.innerHTML = ''; 
+
+    const searchQuery = document.getElementById('search-input').value.toLowerCase();
+    const sortValue = document.getElementById('sort-select').value;
+
+    let filteredStories = allStories.filter(story => 
+        story.title.toLowerCase().includes(searchQuery) || 
+        story.author.toLowerCase().includes(searchQuery)
+    );
+
+    if (sortValue === 'title') {
+        filteredStories.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortValue === 'author') {
+        filteredStories.sort((a, b) => a.author.localeCompare(b.author));
+    } else if (sortValue === 'status') {
+        filteredStories.sort((a, b) => a.status.localeCompare(b.status));
+    }
+
+    if (filteredStories.length === 0) {
+        list.innerHTML = '<p style="color: var(--muted-text); grid-column: 1 / -1; font-style: italic;">No stories found matching your search.</p>';
+        return;
+    }
+
+    filteredStories.forEach(story => {
+        const card = document.createElement('div');
+        card.className = 'story-card'; 
+        
+        let quotesHtml = '<div class="quotes-section"><h4>Favorite Lines:</h4><ul>';
+        if (story.quotes && story.quotes.length > 0) {
+            story.quotes.forEach(q => {
+                quotesHtml += `
+                    <li class="quote-item">
+                        <span>"${q.text}" <em style="color: var(--muted-text);">(Page ${q.pageNumber})</em></span>
+                        <div class="quote-actions">
+                            <button class="btn-icon btn-icon-edit" onclick="openEditQuoteModal('${story.id}', '${q.id}')">Edit</button>
+                            <button class="btn-icon btn-icon-delete" onclick="deleteQuote('${story.id}', '${q.id}')">X</button>
+                        </div>
+                    </li>`;
+            });
+        } else {
+            quotesHtml += '<li style="color: var(--muted-text); list-style: none; font-style: italic;">No lines saved yet.</li>';
+        }
+        quotesHtml += '</ul></div>';
+
+        card.innerHTML = `
+            <h3>${story.title}</h3>
+            <p><strong>Author:</strong> ${story.author}</p>
+            <p><strong>Platform:</strong> ${story.platform}</p>
+            <p><strong>Status:</strong> ${story.status}</p>
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 15px 0;">
+            ${quotesHtml}
+            <button onclick="openQuoteModal('${story.id}')" style="margin-top: 12px; padding: 8px; width: 100%;">Add Quote</button>
+            <div class="card-actions">
+                <button class="btn-edit" onclick="openEditModal('${story.id}')">Edit Story</button>
+                <button class="btn-delete" onclick="requestDeleteStory('${story.id}')">Delete Story</button>
+            </div>
+        `;
+        list.appendChild(card);
+    });
 }
 
 function updateDashboardStats() {
     const totalStories = allStories.length;
-
     const currentlyReading = allStories.filter(story => story.status === 'Currently Reading').length;
-
     const completed = allStories.filter(story => story.status === 'Completed').length;
 
     let totalQuotes = 0;
@@ -244,7 +266,7 @@ function renderReadingList() {
     );
 
     if (activeStories.length === 0) {
-        list.innerHTML = '<p style="color: #94a3b8; grid-column: 1 / -1; font-style: italic;">Your reading list is empty. You are all caught up!</p>';
+        list.innerHTML = '<p style="color: var(--muted-text); grid-column: 1 / -1; font-style: italic;">Your reading list is empty. You are all caught up!</p>';
         return;
     }
 
@@ -265,7 +287,7 @@ function renderReadingList() {
             <p style="margin-top: 15px;"><strong>Author:</strong> ${story.author}</p>
             <p><strong>Platform:</strong> ${story.platform}</p>
             
-            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 15px 0;">
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 15px 0;">
             <button class="btn-secondary" onclick="showPage('library')" style="width: 100%;">Manage in Library</button>
         `;
         list.appendChild(card);
@@ -300,5 +322,8 @@ document.getElementById('dark-mode-toggle').addEventListener('change', (e) => {
         localStorage.setItem('theme', 'light');
     }
 });
+
+document.getElementById('search-input').addEventListener('input', renderLibrary);
+document.getElementById('sort-select').addEventListener('change', renderLibrary);
 
 fetchStories();

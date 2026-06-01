@@ -409,3 +409,20 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
 
 body.dark-mode hr { border-top-color: var(--border-color) !important; }
 body.dark-mode .story-card::before { border-color: var(--border-color); }
+
+.library-controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.library-controls input {
+    flex: 2; 
+    min-width: 200px;
+}
+
+.library-controls select {
+    flex: 1; 
+    min-width: 150px;
+}
