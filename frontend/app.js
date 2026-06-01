@@ -4,82 +4,83 @@ let activeStoryIdForQuote = null;
 let activeQuoteIdForEdit = null;
 let confirmActionCallback = null;
 
-function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => page.style.display = 'none');
-    document.getElementById(pageId).style.display = 'block';
-    
-    if (pageId === 'library') fetchStories();
-    if (pageId === 'reading-list') renderReadingList(); 
+async function loadPage(pageId) {
+    try {
+        const response = await fetch(`${pageId}.html`);
+        if (!response.ok) throw new Error("Page not found");
+        const html = await response.text();
+        document.getElementById('app-content').innerHTML = html;
+
+        if (pageId === 'dashboard') {
+            const savedName = localStorage.getItem('userName') || 'Umanda';
+            document.getElementById('dashboard-welcome-msg').innerText = `Welcome back, ${savedName}!`;
+            if (allStories.length === 0) await fetchStoriesData();
+            updateDashboardStats();
+        } else if (pageId === 'library') {
+            document.getElementById('search-input').addEventListener('input', renderLibrary);
+            document.getElementById('sort-select').addEventListener('change', renderLibrary);
+            if (allStories.length === 0) await fetchStoriesData();
+            renderLibrary();
+        } else if (pageId === 'add') {
+            document.getElementById('add-story-form').addEventListener('submit', handleAddStory);
+        } else if (pageId === 'reading') {
+            if (allStories.length === 0) await fetchStoriesData();
+            renderReadingList();
+        } else if (pageId === 'profile') {
+            const savedName = localStorage.getItem('userName') || 'Umanda';
+            document.getElementById('display-name').value = savedName;
+
+            const themeToggle = document.getElementById('dark-mode-toggle');
+            themeToggle.checked = localStorage.getItem('theme') === 'dark';
+            themeToggle.addEventListener('change', handleThemeToggle);
+
+            document.getElementById('profile-form').addEventListener('submit', handleProfileSave);
+            document.getElementById('export-btn').addEventListener('click', handleExport);
+        }
+    } catch (error) {
+        console.error("Error loading page:", error);
+        document.getElementById('app-content').innerHTML = "<p style='color:red;'>Error loading page. Ensure you are running a local development server.</p>";
+    }
 }
 
-function showCustomAlert(title, message) {
-    document.getElementById('custom-alert-title').innerText = title;
-    document.getElementById('custom-alert-message').innerText = message;
-    document.getElementById('custom-alert-modal').style.display = 'flex';
-}
-function closeAlertModal() { document.getElementById('custom-alert-modal').style.display = 'none'; }
-
-function openConfirmModal(title, message, onConfirm) {
-    document.getElementById('confirm-title').innerText = title;
-    document.getElementById('confirm-message').innerText = message;
-    confirmActionCallback = onConfirm;
-    document.getElementById('custom-confirm-modal').style.display = 'flex';
-}
-function closeConfirmModal() {
-    document.getElementById('custom-confirm-modal').style.display = 'none';
-    confirmActionCallback = null;
-}
-document.getElementById('confirm-action-btn').addEventListener('click', () => {
-    if (confirmActionCallback) confirmActionCallback();
-    closeConfirmModal();
+document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+    loadPage('dashboard');
 });
 
-function openEditModal(storyId) {
-    const story = allStories.find(s => s.id === storyId);
-    if (!story) return;
-    document.getElementById('edit-id').value = story.id;
-    document.getElementById('edit-title').value = story.title;
-    document.getElementById('edit-author').value = story.author;
-    document.getElementById('edit-platform').value = story.platform;
-    document.getElementById('edit-genre').value = story.genre;
-    document.getElementById('edit-status').value = story.status;
-    document.getElementById('custom-edit-modal').style.display = 'flex';
-}
-function closeEditModal() { document.getElementById('custom-edit-modal').style.display = 'none'; }
-
-function openQuoteModal(storyId) {
-    activeStoryIdForQuote = storyId;
-    document.getElementById('modal-quote-text').value = '';
-    document.getElementById('modal-quote-page').value = '';
-    document.getElementById('custom-quote-modal').style.display = 'flex';
-}
-function closeQuoteModal() { document.getElementById('custom-quote-modal').style.display = 'none'; }
-
-function openEditQuoteModal(storyId, quoteId) {
-    const story = allStories.find(s => s.id === storyId);
-    const quote = story.quotes.find(q => q.id === quoteId);
-    if(!quote) return;
-    
-    activeStoryIdForQuote = storyId;
-    activeQuoteIdForEdit = quoteId;
-    document.getElementById('modal-edit-quote-text').value = quote.text;
-    document.getElementById('modal-edit-quote-page').value = quote.pageNumber;
-    document.getElementById('custom-edit-quote-modal').style.display = 'flex';
-}
-function closeEditQuoteModal() { document.getElementById('custom-edit-quote-modal').style.display = 'none'; }
-
-async function fetchStories() {
+async function fetchStoriesData() {
     try {
         const response = await fetch(API_URL);
         allStories = await response.json(); 
-        
-        renderLibrary(); 
-        updateDashboardStats();
     } catch (error) { console.error("Error fetching stories:", error); }
+}
+
+function updateDashboardStats() {
+    const totalStories = allStories.length;
+    const currentlyReading = allStories.filter(story => story.status === 'Currently Reading').length;
+    const completed = allStories.filter(story => story.status === 'Completed').length;
+
+    let totalQuotes = 0;
+    allStories.forEach(story => {
+        if (story.quotes) totalQuotes += story.quotes.length;
+    });
+
+    const elTotal = document.getElementById('stat-total-stories');
+    const elReading = document.getElementById('stat-reading');
+    const elCompleted = document.getElementById('stat-completed');
+    const elQuotes = document.getElementById('stat-quotes');
+
+    if(elTotal) elTotal.innerText = totalStories;
+    if(elReading) elReading.innerText = currentlyReading;
+    if(elCompleted) elCompleted.innerText = completed;
+    if(elQuotes) elQuotes.innerText = totalQuotes;
 }
 
 function renderLibrary() {
     const list = document.getElementById('story-list');
+    if(!list) return;
     list.innerHTML = ''; 
 
     const searchQuery = document.getElementById('search-input').value.toLowerCase();
@@ -141,124 +142,9 @@ function renderLibrary() {
     });
 }
 
-function updateDashboardStats() {
-    const totalStories = allStories.length;
-    const currentlyReading = allStories.filter(story => story.status === 'Currently Reading').length;
-    const completed = allStories.filter(story => story.status === 'Completed').length;
-
-    let totalQuotes = 0;
-    allStories.forEach(story => {
-        if (story.quotes) {
-            totalQuotes += story.quotes.length;
-        }
-    });
-
-    document.getElementById('stat-total-stories').innerText = totalStories;
-    document.getElementById('stat-reading').innerText = currentlyReading;
-    document.getElementById('stat-completed').innerText = completed;
-    document.getElementById('stat-quotes').innerText = totalQuotes;
-}
-
-document.getElementById('add-story-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const story = {
-        title: document.getElementById('title').value,
-        author: document.getElementById('author').value,
-        platform: document.getElementById('platform').value,
-        genre: document.getElementById('genre').value,
-        status: document.getElementById('status').value
-    };
-    const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(story)
-    });
-    if (response.ok) {
-        document.getElementById('add-story-form').reset();
-        showCustomAlert("Success 🎉", "Story successfully registered to your cloud library.");
-        showPage('library'); 
-    }
-});
-
-document.getElementById('edit-story-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const storyId = document.getElementById('edit-id').value;
-    const updatedStory = {
-        title: document.getElementById('edit-title').value,
-        author: document.getElementById('edit-author').value,
-        platform: document.getElementById('edit-platform').value,
-        genre: document.getElementById('edit-genre').value,
-        status: document.getElementById('edit-status').value
-    };
-    const response = await fetch(`${API_URL}/${storyId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedStory)
-    });
-    if (response.ok) {
-        closeEditModal();
-        fetchStories(); 
-    }
-});
-
-function requestDeleteStory(storyId) {
-    openConfirmModal(
-        "Delete Story", 
-        "Are you sure you want to delete this story? This cannot be undone.", 
-        async () => {
-            const response = await fetch(`${API_URL}/${storyId}`, { method: 'DELETE' });
-            if(response.ok) fetchStories();
-        }
-    );
-}
-
-document.getElementById('modal-quote-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!activeStoryIdForQuote) return;
-    const textValue = document.getElementById('modal-quote-text').value;
-    const pageValue = document.getElementById('modal-quote-page').value;
-    
-    const response = await fetch(`${API_URL}/${activeStoryIdForQuote}/quotes`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: textValue, pageNumber: parseInt(pageValue) || 0 })
-    });
-    if (response.ok) {
-        closeQuoteModal();
-        fetchStories(); 
-    }
-});
-
-document.getElementById('modal-edit-quote-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!activeStoryIdForQuote || !activeQuoteIdForEdit) return;
-    const textValue = document.getElementById('modal-edit-quote-text').value;
-    const pageValue = document.getElementById('modal-edit-quote-page').value;
-    
-    const response = await fetch(`${API_URL}/${activeStoryIdForQuote}/quotes/${activeQuoteIdForEdit}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: textValue, pageNumber: parseInt(pageValue) || 0 })
-    });
-    if (response.ok) {
-        closeEditQuoteModal();
-        fetchStories(); 
-    }
-});
-
-function deleteQuote(storyId, quoteId) {
-    openConfirmModal(
-        "Delete Quote", 
-        "Remove this favorite line?", 
-        async () => {
-            const response = await fetch(`${API_URL}/${storyId}/quotes/${quoteId}`, { method: 'DELETE' });
-            if(response.ok) fetchStories();
-        }
-    );
-}
-
 function renderReadingList() {
     const list = document.getElementById('reading-list-grid');
+    if(!list) return;
     list.innerHTML = ''; 
 
     const activeStories = allStories.filter(story => 
@@ -288,32 +174,183 @@ function renderReadingList() {
             <p><strong>Platform:</strong> ${story.platform}</p>
             
             <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 15px 0;">
-            <button class="btn-secondary" onclick="showPage('library')" style="width: 100%;">Manage in Library</button>
+            <button class="btn-secondary" onclick="loadPage('library')" style="width: 100%;">Manage in Library</button>
         `;
         list.appendChild(card);
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const savedName = localStorage.getItem('userName') || 'Umanda';
-    document.getElementById('display-name').value = savedName;
-    document.getElementById('dashboard-welcome-msg').innerText = `Welcome back, ${savedName}!`;
+async function handleAddStory(e) {
+    e.preventDefault();
+    const story = {
+        title: document.getElementById('title').value,
+        author: document.getElementById('author').value,
+        platform: document.getElementById('platform').value,
+        genre: document.getElementById('genre').value,
+        status: document.getElementById('status').value
+    };
+    const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(story)
+    });
+    if (response.ok) {
+        document.getElementById('add-story-form').reset();
+        showCustomAlert("Success 🎉", "Story successfully registered to your library.");
+        await fetchStoriesData();
+        loadPage('library'); 
+    }
+}
 
-    if (localStorage.getItem('theme') === 'dark') {
-        document.body.classList.add('dark-mode');
-        document.getElementById('dark-mode-toggle').checked = true;
+document.getElementById('edit-story-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const storyId = document.getElementById('edit-id').value;
+    const updatedStory = {
+        title: document.getElementById('edit-title').value,
+        author: document.getElementById('edit-author').value,
+        platform: document.getElementById('edit-platform').value,
+        genre: document.getElementById('edit-genre').value,
+        status: document.getElementById('edit-status').value
+    };
+    const response = await fetch(`${API_URL}/${storyId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedStory)
+    });
+    if (response.ok) {
+        closeEditModal();
+        await fetchStoriesData();
+        renderLibrary();
     }
 });
 
-document.getElementById('profile-form').addEventListener('submit', (e) => {
+function requestDeleteStory(storyId) {
+    openConfirmModal(
+        "Delete Story", 
+        "Are you sure you want to delete this story? This cannot be undone.", 
+        async () => {
+            const response = await fetch(`${API_URL}/${storyId}`, { method: 'DELETE' });
+            if(response.ok) {
+                await fetchStoriesData();
+                renderLibrary();
+            }
+        }
+    );
+}
+
+document.getElementById('modal-quote-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!activeStoryIdForQuote) return;
+    const textValue = document.getElementById('modal-quote-text').value;
+    const pageValue = document.getElementById('modal-quote-page').value;
+    
+    const response = await fetch(`${API_URL}/${activeStoryIdForQuote}/quotes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: textValue, pageNumber: parseInt(pageValue) || 0 })
+    });
+    if (response.ok) {
+        closeQuoteModal();
+        await fetchStoriesData();
+        renderLibrary(); 
+    }
+});
+
+document.getElementById('modal-edit-quote-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!activeStoryIdForQuote || !activeQuoteIdForEdit) return;
+    const textValue = document.getElementById('modal-edit-quote-text').value;
+    const pageValue = document.getElementById('modal-edit-quote-page').value;
+    
+    const response = await fetch(`${API_URL}/${activeStoryIdForQuote}/quotes/${activeQuoteIdForEdit}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: textValue, pageNumber: parseInt(pageValue) || 0 })
+    });
+    if (response.ok) {
+        closeEditQuoteModal();
+        await fetchStoriesData();
+        renderLibrary(); 
+    }
+});
+
+function deleteQuote(storyId, quoteId) {
+    openConfirmModal(
+        "Delete Quote", 
+        "Remove this favorite line?", 
+        async () => {
+            const response = await fetch(`${API_URL}/${storyId}/quotes/${quoteId}`, { method: 'DELETE' });
+            if(response.ok) {
+                await fetchStoriesData();
+                renderLibrary();
+            }
+        }
+    );
+}
+
+function showCustomAlert(title, message) {
+    document.getElementById('custom-alert-title').innerText = title;
+    document.getElementById('custom-alert-message').innerText = message;
+    document.getElementById('custom-alert-modal').style.display = 'flex';
+}
+function closeAlertModal() { document.getElementById('custom-alert-modal').style.display = 'none'; }
+
+function openConfirmModal(title, message, onConfirm) {
+    document.getElementById('confirm-title').innerText = title;
+    document.getElementById('confirm-message').innerText = message;
+    confirmActionCallback = onConfirm;
+    document.getElementById('custom-confirm-modal').style.display = 'flex';
+}
+function closeConfirmModal() {
+    document.getElementById('custom-confirm-modal').style.display = 'none';
+    confirmActionCallback = null;
+}
+document.getElementById('confirm-action-btn').addEventListener('click', () => {
+    if (confirmActionCallback) confirmActionCallback();
+    closeConfirmModal();
+});
+
+function openEditModal(storyId) {
+    const story = allStories.find(s => s.id === storyId);
+    if (!story) return;
+    document.getElementById('edit-id').value = story.id;
+    document.getElementById('edit-title').value = story.title;
+    document.getElementById('edit-author').value = story.author;
+    document.getElementById('edit-platform').value = story.platform;
+    document.getElementById('edit-genre').value = story.genre;
+    document.getElementById('edit-status').value = story.status;
+    document.getElementById('custom-edit-modal').style.display = 'flex';
+}
+function closeEditModal() { document.getElementById('custom-edit-modal').style.display = 'none'; }
+
+function openQuoteModal(storyId) {
+    activeStoryIdForQuote = storyId;
+    document.getElementById('modal-quote-text').value = '';
+    document.getElementById('modal-quote-page').value = '';
+    document.getElementById('custom-quote-modal').style.display = 'flex';
+}
+function closeQuoteModal() { document.getElementById('custom-quote-modal').style.display = 'none'; }
+
+function openEditQuoteModal(storyId, quoteId) {
+    const story = allStories.find(s => s.id === storyId);
+    const quote = story.quotes.find(q => q.id === quoteId);
+    if(!quote) return;
+    activeStoryIdForQuote = storyId;
+    activeQuoteIdForEdit = quoteId;
+    document.getElementById('modal-edit-quote-text').value = quote.text;
+    document.getElementById('modal-edit-quote-page').value = quote.pageNumber;
+    document.getElementById('custom-edit-quote-modal').style.display = 'flex';
+}
+function closeEditQuoteModal() { document.getElementById('custom-edit-quote-modal').style.display = 'none'; }
+
+function handleProfileSave(e) {
     e.preventDefault();
     const newName = document.getElementById('display-name').value;
     localStorage.setItem('userName', newName);
-    document.getElementById('dashboard-welcome-msg').innerText = `Welcome back, ${newName}!`;
     showCustomAlert("Settings Saved", "Your display name has been updated.");
-});
+}
 
-document.getElementById('dark-mode-toggle').addEventListener('change', (e) => {
+function handleThemeToggle(e) {
     if (e.target.checked) {
         document.body.classList.add('dark-mode');
         localStorage.setItem('theme', 'dark');
@@ -321,7 +358,17 @@ document.getElementById('dark-mode-toggle').addEventListener('change', (e) => {
         document.body.classList.remove('dark-mode');
         localStorage.setItem('theme', 'light');
     }
-});
+}
+
+function handleExport() {
+    if (!allStories || allStories.length === 0) {
+        showCustomAlert("Export Unavailable", "Your library is empty. Please add items to track first!");
+        return;
+    }
+    const chosenFormat = document.getElementById('export-format').value;
+    if (chosenFormat === 'csv') exportToCSV();
+    else if (chosenFormat === 'pdf') exportToPDF();
+}
 
 function exportToCSV() {
     let csvContent = "data:text/csv;charset=utf-8,";
@@ -333,7 +380,6 @@ function exportToCSV() {
         const cleanAuthor = story.author.replace(/"/g, '""');
         const cleanPlatform = story.platform.replace(/"/g, '""');
         const cleanGenre = story.genre.replace(/"/g, '""');
-        
         const row = `"${cleanTitle}","${cleanAuthor}","${cleanPlatform}","${cleanGenre}","${story.status}",${quotesCount}`;
         csvContent += row + "\n";
     });
@@ -354,10 +400,8 @@ function exportToPDF() {
     doc.setFont("times", "normal");
     doc.setFontSize(24);
     doc.text("My Reading Tracker Library", 20, 25);
-    
     doc.setFontSize(10);
     doc.text(`Exported on: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 20, 33);
-    
     doc.setLineWidth(0.5);
     doc.line(20, 37, 190, 37);
     
@@ -373,7 +417,6 @@ function exportToPDF() {
         doc.setFontSize(14);
         doc.text(`${idx + 1}. ${story.title}`, 20, yPosition);
         yPosition += 6;
-        
         doc.setFont("times", "normal");
         doc.setFontSize(11);
         doc.text(`Author: ${story.author}  |  Platform: ${story.platform}  |  Genre: ${story.genre}  |  Status: ${story.status}`, 25, yPosition);
@@ -384,40 +427,15 @@ function exportToPDF() {
             doc.setFontSize(10);
             doc.text("Favorite Lines:", 25, yPosition);
             yPosition += 5;
-            
             story.quotes.forEach(quote => {
-                if (yPosition > 260) {
-                    doc.addPage();
-                    yPosition = 25;
-                }
+                if (yPosition > 260) { doc.addPage(); yPosition = 25; }
                 doc.text(`  - "${quote.text}" (Page/Ch: ${quote.pageNumber})`, 28, yPosition);
                 yPosition += 5;
             });
             yPosition += 3;
         }
-        
         yPosition += 5; 
     });
     
     doc.save("my_reading_library.pdf");
 }
-
-document.getElementById('export-btn').addEventListener('click', () => {
-    if (!allStories || allStories.length === 0) {
-        showCustomAlert("Export Unavailable", "Your library context empty. Please add items to track first!");
-        return;
-    }
-    
-    const chosenFormat = document.getElementById('export-format').value;
-    
-    if (chosenFormat === 'csv') {
-        exportToCSV();
-    } else if (chosenFormat === 'pdf') {
-        exportToPDF();
-    }
-});
-
-document.getElementById('search-input').addEventListener('input', renderLibrary);
-document.getElementById('sort-select').addEventListener('change', renderLibrary);
-
-fetchStories();

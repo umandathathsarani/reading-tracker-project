@@ -1,0 +1,22 @@
+<section class="form-section">
+    <h2>Add a New Story</h2>
+    <form id="add-story-form">
+        <input type="text" id="title" placeholder="Story Title" required>
+        <input type="text" id="author" placeholder="Author" required>
+        
+        <div class="form-row">
+            <input type="text" id="platform" placeholder="Platform (e.g., Inkitt, AO3)" required>
+            <input type="text" id="genre" placeholder="Genre" required>
+        </div>
+
+        <label for="status">Status</label>
+        <select id="status" required>
+            <option value="" disabled selected>Select Status...</option>
+            <option value="Currently Reading">Currently Reading</option>
+            <option value="Waiting for Update">Waiting for Update</option>
+            <option value="Completed">Completed</option>
+        </select>
+
+        <button type="submit">Add Story</button>
+    </form>
+</section>

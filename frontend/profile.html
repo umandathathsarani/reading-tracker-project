@@ -1,0 +1,38 @@
+<h2>User Profile & Settings</h2>
+<p style="color: #64748b; margin-top: -10px; margin-bottom: 30px;">Customize your Reading Tracker experience.</p>
+
+<div class="form-section">
+    <h3>Personalization</h3>
+    <form id="profile-form">
+        <label for="display-name" style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Display Name</label>
+        <input type="text" id="display-name" placeholder="Enter your name" required style="width: 100%; box-sizing: border-box;">
+        <button type="submit" style="margin-top: 15px; width: 100%;">Save Name</button>
+    </form>
+
+    <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0;">
+
+    <h3>Appearance</h3>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span>
+            <strong>Dark Mode</strong><br>
+            <small style="color: #64748b;">Toggle the application's color scheme</small>
+        </span>
+        
+        <label for="dark-mode-toggle" class="theme-switch" style="display: inline-flex; align-items: center;">
+            <input type="checkbox" id="dark-mode-toggle" aria-label="Enable dark mode">
+            <span class="slider round"></span>
+        </label>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 30px 0;">
+
+    <h3>Data Management</h3>
+    <p style="color: var(--muted-text); margin-top: -10px; margin-bottom: 20px;">Download a complete backup of your cloud library.</p>
+    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+        <select id="export-format" title="Export format">
+            <option value="csv">Spreadsheet (.CSV)</option>
+            <option value="pdf">Document (.PDF)</option>
+        </select>
+        <button id="export-btn" style="flex: 1; min-width: 150px; margin: 0; padding: 12px;">Export Library</button>
+    </div>
+</div>
