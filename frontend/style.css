@@ -225,3 +225,77 @@ nav a:hover {
 .btn-delete:hover {
     background-color: #dc2828;
 }
+
+.quote-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #e2e8f0;
+}
+
+.quote-item:last-child {
+    border-bottom: none;
+}
+
+.quote-actions {
+    display: flex;
+    gap: 5px;
+    margin-left: 15px;
+}
+
+.btn-icon {
+    background: #f1f5f9;
+    border: none;
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-icon-edit { color: #3b82f6; }
+.btn-icon-edit:hover { background: #dbeafe; }
+
+.btn-icon-delete { color: #ef4444; }
+.btn-icon-delete:hover { background: #fee2e2; }
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: var(--card-background);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-left: 5px solid var(--primary-color);
+}
+
+.stat-icon {
+    font-size: 32px;
+    background: var(--background-color);
+    padding: 10px;
+    border-radius: 50%;
+}
+
+.stat-details h3 {
+    margin: 0;
+    font-size: 14px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-details p {
+    margin: 5px 0 0 0;
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--text-color);
+}

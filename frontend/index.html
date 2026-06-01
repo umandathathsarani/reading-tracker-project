@@ -25,9 +25,43 @@
             <p>Track your books, webnovels, and fanfics</p>
         </header>
 
-        <div id="dashboard" class="page">
-            <h2>Dashboard</h2>
-            <p>Welcome back! Use the navigation above to manage your library.</p>
+<div id="dashboard" class="page">
+            <h2>Welcome to your Dashboard</h2>
+            <p style="color: #64748b; margin-top: -10px; margin-bottom: 30px;">Here is a breakdown of your current reading habits.</p>
+            
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-details">
+                        <h3>Total Stories</h3>
+                        <p id="stat-total-stories">0</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-details">
+                        <h3>Currently Reading</h3>
+                        <p id="stat-reading">0</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-details">
+                        <h3>Completed</h3>
+                        <p id="stat-completed">0</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-details">
+                        <h3>Favorite Lines</h3>
+                        <p id="stat-quotes">0</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="library" class="page" style="display:none;">
@@ -110,6 +144,31 @@
 
                 <div class="modal-buttons">
                     <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="custom-confirm-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <h3 id="confirm-title">Confirm Action</h3>
+            <p id="confirm-message">Are you sure you want to proceed?</p>
+            <div class="modal-buttons">
+                <button type="button" class="btn-secondary" onclick="closeConfirmModal()">Cancel</button>
+                <button type="button" class="btn-delete" id="confirm-action-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-edit-quote-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <h3>Edit Favorite Line</h3>
+            <form id="modal-edit-quote-form">
+                <input type="text" id="modal-edit-quote-text" required>
+                <input type="number" id="modal-edit-quote-page" required>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" onclick="closeEditQuoteModal()">Cancel</button>
                     <button type="submit">Save Changes</button>
                 </div>
             </form>
