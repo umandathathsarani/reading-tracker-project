@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Reading Tracker</title>
-    
+
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
     
     <link rel="stylesheet" href="style.css">
@@ -35,6 +35,7 @@
             <div id="story-list" class="story-grid"></div>
         </div>
 
+
         <div id="add-new" class="page" style="display:none;">
             <section class="form-section">
                 <h2>Add a New Story</h2>
@@ -62,6 +63,29 @@
 
         <div id="reading-list" class="page" style="display:none;"><h2>Reading List</h2><p>Coming soon!</p></div>
         <div id="profile" class="page" style="display:none;"><h2>Profile</h2><p>User settings here.</p></div>
+    </div>
+
+    <div id="custom-alert-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <h3 id="custom-alert-title">Notification</h3>
+            <p id="custom-alert-message">Success message text</p>
+            <button onclick="closeAlertModal()">OK</button>
+        </div>
+    </div>
+
+    <div id="custom-quote-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <h3>Add Favorite Line</h3>
+            <p style="font-size: 14px; color: #64748b; margin-top: -5px;">Save a memorable line and track where it came from.</p>
+            <form id="modal-quote-form">
+                <input type="text" id="modal-quote-text" placeholder="Enter your favorite line..." required>
+                <input type="number" id="modal-quote-page" placeholder="Page / Chapter number" required>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" onclick="closeQuoteModal()">Cancel</button>
+                    <button type="submit">Save Quote</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="app.js"></script>
