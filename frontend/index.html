@@ -88,6 +88,34 @@
         </div>
     </div>
 
+    <div id="custom-edit-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <h3>Edit Story</h3>
+            <form id="edit-story-form">
+                <input type="hidden" id="edit-id"> 
+                
+                <input type="text" id="edit-title" placeholder="Story Title" required>
+                <input type="text" id="edit-author" placeholder="Author" required>
+                
+                <div class="form-row">
+                    <input type="text" id="edit-platform" placeholder="Platform" required>
+                    <input type="text" id="edit-genre" placeholder="Genre" required>
+                </div>
+
+                <select id="edit-status" required>
+                    <option value="Currently Reading">Currently Reading</option>
+                    <option value="Waiting for Update">Waiting for Update</option>
+                    <option value="Completed">Completed</option>
+                </select>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>

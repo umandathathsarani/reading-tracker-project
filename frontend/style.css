@@ -29,7 +29,6 @@ header h1 {
     margin-bottom: 5px;
 }
 
-/* Form Styling */
 .form-section {
     background: var(--card-background);
     padding: 25px;
@@ -201,4 +200,28 @@ nav a:hover {
 
 .btn-secondary:hover {
     background-color: #e2e8f0;
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-edit {
+    background-color: #3b82f6; 
+    flex: 1;
+}
+
+.btn-edit:hover {
+    background-color: #2563eb;
+}
+
+.btn-delete {
+    background-color: #ef4444; 
+    flex: 1;
+}
+
+.btn-delete:hover {
+    background-color: #dc2828;
 }
