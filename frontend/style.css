@@ -434,3 +434,54 @@ body.dark-mode .btn-icon-delete:hover { background: #5d4037; border-color: #5d40
 
 input:checked + .slider { background-color: var(--primary-color); }
 input:checked + .slider:before { transform: translateX(24px); background-color: var(--text-color); }
+
+@media (max-width: 768px) {
+    body {
+        padding: 15px 10px;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    nav {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px;
+    }
+
+    nav a {
+        flex: 1 1 calc(33% - 16px);
+        text-align: center;
+        font-size: 12px;
+        padding: 8px 5px;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .library-controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .library-controls input, 
+    .library-controls select {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .story-grid,
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-section, 
+    .story-card, 
+    .modal-card, 
+    .stat-card {
+        padding: 20px;
+    }
+}
