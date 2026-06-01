@@ -7,7 +7,10 @@ let confirmActionCallback = null;
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(page => page.style.display = 'none');
     document.getElementById(pageId).style.display = 'block';
+    
     if (pageId === 'library') fetchStories();
+
+    if (pageId === 'reading-list') renderReadingList(); 
 }
 
 function showCustomAlert(title, message) {
@@ -230,6 +233,43 @@ function deleteQuote(storyId, quoteId) {
             if(response.ok) fetchStories();
         }
     );
+}
+
+function renderReadingList() {
+    const list = document.getElementById('reading-list-grid');
+    list.innerHTML = ''; 
+
+    const activeStories = allStories.filter(story => 
+        story.status === 'Currently Reading' || story.status === 'Waiting for Update'
+    );
+
+    if (activeStories.length === 0) {
+        list.innerHTML = '<p style="color: #94a3b8; grid-column: 1 / -1; font-style: italic;">Your reading list is empty. You are all caught up!</p>';
+        return;
+    }
+
+    activeStories.forEach(story => {
+        const card = document.createElement('div');
+        card.className = 'story-card'; 
+
+        const badgeColor = story.status === 'Currently Reading' ? '#dcfce7' : '#fef08a';
+        const textColor = story.status === 'Currently Reading' ? '#166534' : '#854d0e';
+
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <h3 style="margin: 0;">${story.title}</h3>
+                <span style="background: ${badgeColor}; color: ${textColor}; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">
+                    ${story.status}
+                </span>
+            </div>
+            <p style="margin-top: 15px;"><strong>Author:</strong> ${story.author}</p>
+            <p><strong>Platform:</strong> ${story.platform}</p>
+            
+            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 15px 0;">
+            <button class="btn-secondary" onclick="showPage('library')" style="width: 100%;">Manage in Library</button>
+        `;
+        list.appendChild(card);
+    });
 }
 
 // Fetch data immediately when the app opens
