@@ -12,11 +12,11 @@
 <body>
 
     <nav>
-        <a href="index.html">Dashboard</a>
-        <a href="library.html">Library</a>
-        <a href="add.html">Add New</a>
-        <a href="reading.html">Reading List</a>
-        <a href="profile.html">Profile</a>
+        <a href="/frontend/index.html" onclick="showPage('dashboard')">Dashboard</a>
+        <a href="/frontend/library.html" onclick="showPage('library')">Library</a>
+        <a href="/frontend/add.html" onclick="showPage('add-new')">Add New</a>
+        <a href="/frontend/reading.html" onclick="showPage('reading-list')">Reading List</a>
+        <a href="/frontend/profile.html" onclick="showPage('profile')">Profile</a>
     </nav>
 
     <div class="container">
@@ -25,33 +25,43 @@
             <p>Track your books, webnovels, and fanfics</p>
         </header>
 
-        <section class="form-section">
-            <h2>Add a New Story</h2>
-            <form id="add-story-form">
-                <input type="text" id="title" placeholder="Story Title" required>
-                <input type="text" id="author" placeholder="Author" required>
-                
-                <div class="form-row">
-                    <input type="text" id="platform" placeholder="Platform (e.g., Inkitt, AO3)" required>
-                    <input type="text" id="genre" placeholder="Genre" required>
-                </div>
+        <div id="dashboard" class="page">
+            <h2>Dashboard</h2>
+            <p>Welcome back! Use the navigation above to manage your library.</p>
+        </div>
 
-                <label for="status">Status</label>
-                <select id="status" required>
-                    <option value="" disabled selected>Select Status...</option>
-                    <option value="Currently Reading">Currently Reading</option>
-                    <option value="Waiting for Update">Waiting for Update</option>
-                    <option value="Completed">Completed</option>
-                </select>
-
-                <button type="submit">Add Story</button>
-            </form>
-        </section>
-
-        <section class="list-section">
+        <div id="library" class="page" style="display:none;">
             <h2>My Library</h2>
             <div id="story-list" class="story-grid"></div>
-        </section>
+        </div>
+
+        <div id="add-new" class="page" style="display:none;">
+            <section class="form-section">
+                <h2>Add a New Story</h2>
+                <form id="add-story-form">
+                    <input type="text" id="title" placeholder="Story Title" required>
+                    <input type="text" id="author" placeholder="Author" required>
+                    
+                    <div class="form-row">
+                        <input type="text" id="platform" placeholder="Platform (e.g., Inkitt, AO3)" required>
+                        <input type="text" id="genre" placeholder="Genre" required>
+                    </div>
+
+                    <label for="status">Status</label>
+                    <select id="status" required>
+                        <option value="" disabled selected>Select Status...</option>
+                        <option value="Currently Reading">Currently Reading</option>
+                        <option value="Waiting for Update">Waiting for Update</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+
+                    <button type="submit">Add Story</button>
+                </form>
+            </section>
+        </div>
+
+        <div id="reading-list" class="page" style="display:none;"><h2>Reading List</h2><p>Coming soon!</p></div>
+        <div id="profile" class="page" style="display:none;"><h2>Profile</h2><p>User settings here.</p></div>
     </div>
 
     <script src="app.js"></script>
