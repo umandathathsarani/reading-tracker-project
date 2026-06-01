@@ -299,3 +299,66 @@ nav a:hover {
     font-weight: bold;
     color: var(--text-color);
 }
+
+body.dark-mode {
+    --background-color: #0f172a; 
+    --card-background: #1e293b;
+    --text-color: #f8fafc; 
+}
+
+body.dark-mode input, body.dark-mode select {
+    background-color: #334155;
+    color: white;
+    border-color: #475569;
+}
+
+body.dark-mode .quotes-section li, 
+body.dark-mode .stat-details h3 {
+    color: #cbd5e1;
+}
+
+body.dark-mode hr {
+    border-top-color: #334155 !important;
+}
+
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+}
+
+.theme-switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(22px);
+}

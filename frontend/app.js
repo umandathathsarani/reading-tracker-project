@@ -272,5 +272,33 @@ function renderReadingList() {
     });
 }
 
-// Fetch data immediately when the app opens
+document.addEventListener('DOMContentLoaded', () => {
+    const savedName = localStorage.getItem('userName') || 'Umanda';
+    document.getElementById('display-name').value = savedName;
+    document.getElementById('dashboard-welcome-msg').innerText = `Welcome back, ${savedName}!`;
+
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('dark-mode-toggle').checked = true;
+    }
+});
+
+document.getElementById('profile-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newName = document.getElementById('display-name').value;
+    localStorage.setItem('userName', newName);
+    document.getElementById('dashboard-welcome-msg').innerText = `Welcome back, ${newName}!`;
+    showCustomAlert("Settings Saved", "Your display name has been updated.");
+});
+
+document.getElementById('dark-mode-toggle').addEventListener('change', (e) => {
+    if (e.target.checked) {
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+    } else {
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('theme', 'light');
+    }
+});
+
 fetchStories();

@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Reading Tracker</title>
-
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -25,8 +23,8 @@
             <p>Track your books, webnovels, and fanfics</p>
         </header>
 
-<div id="dashboard" class="page">
-            <h2>Welcome to your Dashboard</h2>
+        <div id="dashboard" class="page">
+            <h2 id="dashboard-welcome-msg">Welcome back, Umanda!</h2>
             <p style="color: #64748b; margin-top: -10px; margin-bottom: 30px;">Here is a breakdown of your current reading habits.</p>
             
             <div class="dashboard-grid">
@@ -69,7 +67,6 @@
             <div id="story-list" class="story-grid"></div>
         </div>
 
-
         <div id="add-new" class="page" style="display:none;">
             <section class="form-section">
                 <h2>Add a New Story</h2>
@@ -101,6 +98,36 @@
             
             <div id="reading-list-grid" class="story-grid"></div>
         </div>
+
+        <div id="profile" class="page" style="display:none;">
+            <h2>User Profile & Settings</h2>
+            <p style="color: #64748b; margin-top: -10px; margin-bottom: 30px;">Customize your Reading Tracker experience.</p>
+
+            <div class="form-section">
+                <h3>Personalization</h3>
+                <form id="profile-form">
+                    <label for="display-name" style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Display Name</label>
+                    <input type="text" id="display-name" placeholder="Enter your name" required style="width: 100%; box-sizing: border-box;">
+                    <button type="submit" style="margin-top: 15px; width: 100%;">Save Name</button>
+                </form>
+
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0;">
+
+                <h3>Appearance</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>
+                        <strong>Dark Mode</strong><br>
+                        <small style="color: #64748b;">Toggle the application's color scheme</small>
+                    </span>
+                    
+                    <label class="theme-switch">
+                        <input type="checkbox" id="dark-mode-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="custom-alert-modal" class="modal-overlay" style="display: none;">
         <div class="modal-card">
