@@ -1,11 +1,11 @@
 package com.readingtracker.backend;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 
 @SpringBootApplication
 public class BackendApplication {
@@ -16,10 +16,12 @@ public class BackendApplication {
 
     @Bean
     public MongoClient mongoClient() {
-        String databaseLink = System.getenv("MONGO_URI");
+        // Automatically load the hidden .env file
+        Dotenv dotenv = Dotenv.load();
+        String databaseLink = dotenv.get("MONGO_URI");
 
         if (databaseLink == null || databaseLink.isEmpty()) {
-            throw new IllegalStateException("SECURITY ALERT: MONGO_URI environment variable is missing!");
+            throw new IllegalStateException("SECURITY ALERT: MONGO_URI is missing from the .env file!");
         }
 
         return MongoClients.create(databaseLink);
