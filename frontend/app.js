@@ -323,6 +323,100 @@ document.getElementById('dark-mode-toggle').addEventListener('change', (e) => {
     }
 });
 
+function exportToCSV() {
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Title,Author,Platform,Genre,Status,Saved Lines Count\n";
+
+    allStories.forEach(story => {
+        const quotesCount = story.quotes ? story.quotes.length : 0;
+        const cleanTitle = story.title.replace(/"/g, '""');
+        const cleanAuthor = story.author.replace(/"/g, '""');
+        const cleanPlatform = story.platform.replace(/"/g, '""');
+        const cleanGenre = story.genre.replace(/"/g, '""');
+        
+        const row = `"${cleanTitle}","${cleanAuthor}","${cleanPlatform}","${cleanGenre}","${story.status}",${quotesCount}`;
+        csvContent += row + "\n";
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "my_reading_library.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    doc.setFont("times", "normal");
+    doc.setFontSize(24);
+    doc.text("My Reading Tracker Library", 20, 25);
+    
+    doc.setFontSize(10);
+    doc.text(`Exported on: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 20, 33);
+    
+    doc.setLineWidth(0.5);
+    doc.line(20, 37, 190, 37);
+    
+    let yPosition = 50;
+    
+    allStories.forEach((story, idx) => {
+        if (yPosition > 260) {
+            doc.addPage();
+            yPosition = 25;
+        }
+        
+        doc.setFont("times", "bold");
+        doc.setFontSize(14);
+        doc.text(`${idx + 1}. ${story.title}`, 20, yPosition);
+        yPosition += 6;
+        
+        doc.setFont("times", "normal");
+        doc.setFontSize(11);
+        doc.text(`Author: ${story.author}  |  Platform: ${story.platform}  |  Genre: ${story.genre}  |  Status: ${story.status}`, 25, yPosition);
+        yPosition += 8;
+        
+        if (story.quotes && story.quotes.length > 0) {
+            doc.setFont("times", "italic");
+            doc.setFontSize(10);
+            doc.text("Favorite Lines:", 25, yPosition);
+            yPosition += 5;
+            
+            story.quotes.forEach(quote => {
+                if (yPosition > 260) {
+                    doc.addPage();
+                    yPosition = 25;
+                }
+                doc.text(`  - "${quote.text}" (Page/Ch: ${quote.pageNumber})`, 28, yPosition);
+                yPosition += 5;
+            });
+            yPosition += 3;
+        }
+        
+        yPosition += 5; 
+    });
+    
+    doc.save("my_reading_library.pdf");
+}
+
+document.getElementById('export-btn').addEventListener('click', () => {
+    if (!allStories || allStories.length === 0) {
+        showCustomAlert("Export Unavailable", "Your library context empty. Please add items to track first!");
+        return;
+    }
+    
+    const chosenFormat = document.getElementById('export-format').value;
+    
+    if (chosenFormat === 'csv') {
+        exportToCSV();
+    } else if (chosenFormat === 'pdf') {
+        exportToPDF();
+    }
+});
+
 document.getElementById('search-input').addEventListener('input', renderLibrary);
 document.getElementById('sort-select').addEventListener('change', renderLibrary);
 

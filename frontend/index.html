@@ -6,6 +6,7 @@
     <title>My Reading Tracker</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -62,7 +63,7 @@
             </div>
         </div>
 
-<div id="library" class="page" style="display:none;">
+        <div id="library" class="page" style="display:none;">
             <h2>My Library</h2>
             
             <div class="library-controls">
@@ -135,6 +136,18 @@
                         <input type="checkbox" id="dark-mode-toggle">
                         <span class="slider round"></span>
                     </label>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 30px 0;">
+
+                <h3>Data Management</h3>
+                <p style="color: var(--muted-text); margin-top: -10px; margin-bottom: 20px;">Download a complete backup of your cloud library.</p>
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <select id="export-format" style="flex: 1; min-width: 150px; margin: 0;">
+                        <option value="csv">Spreadsheet (.CSV)</option>
+                        <option value="pdf">Document (.PDF)</option>
+                    </select>
+                    <button id="export-btn" style="flex: 1; min-width: 150px; margin: 0; padding: 12px;">Export Library</button>
                 </div>
             </div>
         </div>
